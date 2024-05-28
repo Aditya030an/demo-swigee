@@ -1,65 +1,53 @@
-import React from "react";
-import { useState } from "react";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  hideLogin,
+  hideOTP,
+  hideSignUp,
   showOTP,
   showSignUp,
   addPhoneNumber,
-  addOTP,
-  removePhoneNumber,
-} from "../utils/sideSlice";
-import { isNamePresent } from "../utils/userDataSlice";
+  findUserByPhoneNumber,
+} from "../utils/userDataSlice";
 const LoginCard = () => {
   const dispatch = useDispatch();
-  const [phoneNumber, setPhoneNumber] = useState("");
-
+  const [phoneNumber , setPhoneNumber] = useState("");
+  const [validPhoneNumber , setValidPhoneNumber] = useState(true);
   const handleChange = (e) => {
     const clearPhoneNumber = e.target.value.replace(/[^0-9]/g, "");
     setPhoneNumber(clearPhoneNumber);
-    SetValid(false);
+    if(clearPhoneNumber.length !== 10){
+      setValidPhoneNumber(false);
+    }else{
+      setValidPhoneNumber(true);
+    }
   };
-  const handleSignUp = () => {
+
+  const handlePageChange = () => {
+    /* login = false , sign = true , otp = false */
+    dispatch(hideLogin());
+    dispatch(hideOTP());
     dispatch(showSignUp());
   };
-  const showSign = useSelector((store) => store.side.isSignUp);
-  // console.log("Login", showSign);
 
-  const [valid, SetValid] = useState(false);
-  const CheckNumber = () => {
-    SetValid(true);
-  };
-  const verify = useSelector((store) => store.userData.valid);
-  const handleOTP = () => {
-    dispatch(showOTP());
-    dispatch(isNamePresent(phoneNumber));
+  // const [validNumber, setValidNumber] = useState(false);
+  
+  const findNumber = useSelector((store)=>store.userData.findPhoneNumber);
+  const handleLoginPageChange = () => {
+    dispatch(findUserByPhoneNumber(phoneNumber));
+    console.log(findNumber);
+    if (findNumber === true) {
+      dispatch(hideLogin());
+      dispatch(showOTP());
+      dispatch(hideSignUp());
+    } else {
+      dispatch(hideLogin());
+      dispatch(hideOTP());
+      dispatch(showSignUp());
+    }
     dispatch(addPhoneNumber(phoneNumber));
-    {
-      verify ? getOTP() : console.log("getOTP verify", verify);
-    }
   };
-  function getRandomNumber(max) {
-    let ans = "";
-    for (let i = 0; i < 7; i++) {
-      const randomNumber = Math.floor(Math.random() * (max + 1));
-      ans += randomNumber;
-    }
-    return ans;
-  }
-  const getOTP = () => {
-    const number = getRandomNumber(9);
-    console.log("Random Number->", number);
-    setTimeout(() => {
-      alert(`Your OTP will be ${number}`);
-    }, 5000);
-    dispatch(addOTP(number));
-  };
-  const handlePhoneNumber = () => {
-    dispatch(removePhoneNumber());
-  };
-
-  // const viewPage = ()=>{
-  //   dispatch(viewPage(true));
-  // }
   return (
     <div>
       <div className="flex justify-between ">
@@ -69,8 +57,7 @@ const LoginCard = () => {
             or<span> </span>
             <button
               onClick={() => {
-                handleSignUp();
-                handlePhoneNumber();
+                handlePageChange();
               }}
               className="text-orange-400 hover:text-black"
             >
@@ -90,13 +77,10 @@ const LoginCard = () => {
       <div className=" flex flex-col mt-7">
         <div className="border-2 border-gray-400 p-4 w-full">
           <div className="text-gray-500 font-medium">
-            {valid ? (
-              phoneNumber.length < 10 ? (
-                <div className="text-red-500">Enter valid number</div>
-              ) : null
-            ) : (
-              <div className="text-gray-500">Phone number</div>
-            )}
+            {validPhoneNumber ?
+              <div className="text-gray-500">Phone number</div>:
+              <div className="text-red-500">Enter valid Phone Number</div>
+            }
           </div>
           <input
             type="tel"
@@ -110,9 +94,9 @@ const LoginCard = () => {
         <button
           className="bg-orange-500 text-white font-medium p-4 w-full mt-2"
           onClick={() => {
-            CheckNumber();
             {
-              phoneNumber.length === 10 ? (handleOTP(), viewPage()) : null;
+              validPhoneNumber ? 
+              handleLoginPageChange():null
             }
           }}
         >

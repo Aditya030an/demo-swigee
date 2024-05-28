@@ -21,12 +21,13 @@ const SideLocation = () => {
 
   const getState = async () => {
     const data = await fetch(
+      // "https://countriesnow.space/api/v0.1/countries/states"
       "https://countriesnow.space/api/v0.1/countries/states"
     );
     const json = await data.json();
-    // console.log(json.data);
+    console.log(json.data);
     const country = json?.data?.filter((item) => item?.name === "India");
-    // console.log(country[0]?.states);
+    console.log(country[0]?.states);
     setState(country[0]?.states);
     // setFilterstate(country[0]?.states);
   };

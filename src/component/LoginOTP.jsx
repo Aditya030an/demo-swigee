@@ -1,41 +1,27 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { hideOTP } from "../utils/sideSlice";
-import { FaArrowLeft } from "react-icons/fa6";
-import { signOTP } from "../utils/userDataSlice";
-import { removeLogin, hideSignUp, removePhoneNumber } from "../utils/sideSlice";
+import { useSelector } from "react-redux";
 
 const LoginOTP = () => {
-  const dispatch = useDispatch();
-  const [OTPnum, setOTPnum] = useState("");
-  const phoneNumber = useSelector((store) => store.side.phoneItem);
-  console.log(phoneNumber)
-
-  const otp = useSelector((store) => store.side.OTP);
-  console.log(otp);
-  setTimeout(() => {
-    setOTPnum(otp);
-  }, 5000);
-
-  const handleSignOTP=()=>{
-    dispatch(signOTP(false));
+  
+  const [OtpValue , setOtpValue] = useState('');
+  function getRandomNumber(max) {
+    let ans = "";
+    for (let i = 0; i < 7; i++) {
+      const randomNumber = Math.floor(Math.random() * (max + 1));
+      ans += randomNumber;
+    }
+    return ans;
   }
-
-  const handleLogin = () => {
-    dispatch(removeLogin());
+  function getOTP () {
+    const number = getRandomNumber(9);
+    console.log("Random Number->", number);
+    setTimeout(() => {
+      alert(`Your OTP will be ${number}`);
+      setOtpValue(number);
+    }, 5000);
   };
-  const handleSignUp = () => {
-    dispatch(hideSignUp());
-  };
-  const handlePhoneNumber = ()=>{
-    dispatch(removePhoneNumber());
-  }
-  const handleOTP = () => {
-    dispatch(hideOTP());
-  };
-  const handleValid = ()=>{
-    dispatch
-  }
+  const stateOTP = useSelector((store)=>store.userData.showOTP);
+  stateOTP ? getOTP():null;
   return (
     <div className="flex flex-col">
       <div className=" flex pt-7 justify-between">
@@ -63,7 +49,7 @@ const LoginOTP = () => {
             name="phone number"
             maxLength={10}
             readOnly={true}
-            value={phoneNumber[phoneNumber.length - 1]}
+            // value={phoneNumber[phoneNumber.length - 1]}
             className="border-none outline-none text-2xl text-black w-full font-semibold"
           />
         </div>
@@ -74,7 +60,7 @@ const LoginOTP = () => {
           <input
             type="tel"
             name="password"
-            value={OTPnum}
+            value={OtpValue}
             maxLength={7}
             onChange={(e) => {
               setOTPnum(e.target.value);
@@ -87,12 +73,6 @@ const LoginOTP = () => {
         <button
           className="bg-orange-500 text-white font-medium p-4 w-full mt-2"
           onClick={()=>{
-            handleSignOTP();
-            handleLogin();
-            handleSignUp();
-            handlePhoneNumber();
-            handleOTP();
-            handleValid();
           }}
         >
           <h1> VERIFY OTP </h1>

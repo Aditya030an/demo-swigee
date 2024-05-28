@@ -1,60 +1,57 @@
-import React, { useState } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { removeLogin, hideSignUp, removePhoneNumber } from "../utils/sideSlice";
-import { signOTP } from "../utils/userDataSlice";
+import { hideOTP, hidePage, hideReferal, hideSignUp, hideSignUpCardOTP, showLogin, showReferal, showSignUpCardOTP  } from "../utils/userDataSlice";
 import LoginCard from "./LoginCard";
-import LoginSignCard from "./LoginSignCard";
 import LoginOTP from "./LoginOTP";
-import { FaArrowLeft } from "react-icons/fa6";
+import LoginSignCard from "./LoginSignCard";
+import LoginSignCardOTP from "./LoginSignCardOTP";
 const Login = () => {
-  const valid = useSelector((store)=>store.userData.valid);
-  console.log("inside Login",valid);
   const dispatch = useDispatch();
-  const handleLogin = () => {
-    dispatch(removeLogin());
-  };
-  const handleSignUp = () => {
+
+  const handleShowPage = ()=>{
+    dispatch(hidePage());
+    dispatch(showLogin());
     dispatch(hideSignUp());
-  };
-  const handlePhoneNumber = ()=>{
-    dispatch(removePhoneNumber());
-  }
-  const handleOTP = () => {
+    dispatch(hideReferal());
     dispatch(hideOTP());
-  };
-  const handleSignOTP=()=>{
-    dispatch( signOTP (false));
+    dispatch(hideSignUpCardOTP());
   }
-  const show = useSelector((store) => store.side.isLogin);
-  const showSign = useSelector((store) => store.side.isSignUp);
-  const showOTP = useSelector((store) => store.side.isOTP);
-  const signOTP = useSelector((store)=>store.userData.isSignOTP);
-  // const validPage = useSelector((store)=>store.userData.validPage);
-  // const viewPage = useSelector((store)=>store.userData.viewPage);
-  return show ? (
+  const showPage = useSelector((store)=>store.userData.showPage);
+  const showLoginPage = useSelector((store)=>store.userData.showLogin);
+  // console.log("show Login page",showLoginPage);
+  const showOTPPage = useSelector((store)=>store.userData.showOTP);
+  // console.log("show otp page",showOTPPage);
+  const showSignUpPage = useSelector((store)=>store.userData.showSignUp);
+  // console.log("show signup page",showSignUpPage);
+  const showSignUpOTP = useSelector((store)=>store.userData.showSignUpCardOTP);
+  // console.log("show page",showPage);
+  return showPage ? (
     <div className="borber-2 border-red-500 absolute h-screen w-full bg-opacity-55 flex justify-end bg-gray-600 z-50">
       <div className="border-2 border-green-400 w-5/12 bg-white opacity-100 flex pl-10 pt-10">
         <div className=" flex flex-col w-8/12">
           <button
             onClick={() => {
-              handleLogin();
-              handleSignUp();
-              handlePhoneNumber();
-              handleOTP();
-              handleSignOTP();
+              handleShowPage();
             }}
             className="text-left text-4xl text-gray-500"
           >
-            {showOTP && showSign && signOTP ? <div><FaArrowLeft /></div> : <div>X</div>}
+            <div>X</div>
           </button>
           <div>
-            {(showSign) ? (<LoginSignCard />) : (showOTP ? (valid ? <LoginOTP /> : (signOTP  ? <LoginOTP/> : <LoginSignCard/>)) : (<LoginCard />)) }
-
+            {
+              showLoginPage ? <LoginCard/> : null
+            }
+            {
+              showOTPPage ? <LoginOTP/> : null
+            }
+            {
+              showSignUpPage ? <LoginSignCard/> : null
+            }
+            {
+              showSignUpOTP ? <LoginSignCardOTP/> :null
+            }
           </div>
           <div className="">
-            {showOTP ? (
-              <div></div>
-            ) : (
               <div>
                 <p className="text-gray-500">
                   By clicking on Login, I accept the{" "}
@@ -68,7 +65,6 @@ const Login = () => {
                   </span>
                 </p>
               </div>
-            )}
           </div>
         </div>
       </div>

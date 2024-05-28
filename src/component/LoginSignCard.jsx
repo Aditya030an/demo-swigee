@@ -1,42 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { hideOTP, hideSignUp } from "../utils/sideSlice";
-import { compose } from "@reduxjs/toolkit";
-import userDataSlice, {
-  addUserInfo,
-  isNamePresent,
-  signOTP,
+import {
+  showLogin,
+  showReferal,
+  showOTP,
+  hideLogin,
+  hideSignUp,
+  hideOTP,
+  showSignUpCardOTP,
+  addUserData,
 } from "../utils/userDataSlice";
+import LoginSignCardOTP from "./LoginSignCardOTP";
 
 const LoginSignCard = () => {
+  const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const number = useSelector((store) => store.side.phoneItem);
-  const dispatch = useDispatch();
-  const [phoneNumber, setPhoneNumber] = useState(number[number.length - 1]);
-
+  const number = useSelector((store) => store.userData.loginEnterPhoneNumber);
+  const [phoneNumber, setPhoneNumber] = useState(number);
   const handleChange = (e) => {
     const clearPhoneNumber = e.target.value.replace(/[^0-9]/g, "");
     setPhoneNumber(clearPhoneNumber);
     setValidNumber(true);
   };
-  const [show, setShow] = useState(false);
-  const showReferralInput = () => {
-    setShow(true);
-  };
-  const handleSignUp = () => {
-    dispatch(hideSignUp());
-  };
-  const showSign = useSelector((store) => store.side.isSignUp);
-  // console.log("sign", showSign);
-
   const [validNumber, setValidNumber] = useState(true);
   const [validName, setValidName] = useState(true);
   const [validEmail, setValidEmail] = useState(true);
-  const [validProcess, setValidProcess] = useState(false);
+  const [shouldExecuteSignUpPageChange, setShouldExecuteSignUpPageChange] =
+    useState(false);
+
   const handleContinue = () => {
+    let isValid = true;
+
     if (name.length === 0) {
       setValidName(false);
+      isValid = false;
     } else {
       setValidName(true);
     }
@@ -46,59 +44,57 @@ const LoginSignCard = () => {
       setValidEmail(true);
     } else {
       setValidEmail(false);
+      isValid = false;
     }
-    if (phoneNumber === undefined) {
+    if (phoneNumber === undefined || phoneNumber?.length !== 10) {
       setValidNumber(false);
-    } else if (phoneNumber?.length !== 10) {
-      setValidNumber(false);
+      isValid = false;
     } else {
       setValidNumber(true);
+    }
+    if (isValid) {
+      console.log(
+        "All fields are valid. Setting shouldExecuteSignUpPageChange to true."
+      );
+      setShouldExecuteSignUpPageChange(true);
+      console.log("true", isValid);
+    } else {
+      console.log("isValid", isValid);
     }
     console.log("handleContainer");
   };
 
-  const handleUserData = () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (
-      name.length > 0 &&
-      phoneNumber.length === 10 &&
-      emailRegex.test(email)
-    ) {
-      setValidProcess(true);
-      console.log("true");
-      // const data = useSelector((store)=>store.userData.item);
-      // console.log("data",data);
-      const info = {
-        phoneNumber: phoneNumber,
-        name: name,
-        email: email,
-        cart: null,
-      };
-      dispatch(addUserInfo(info));
-      dispatch(isNamePresent(phoneNumber));
-    }
-    else{
-      console.log("HandleUserData" , false);
-    }
+  const Referal = useSelector((store) => store.userData.showReferal);
+  const showReferralInput = () => {
+    console.log("referal input");
+    dispatch(showReferal());
   };
-  const handleOTP = () => {
+  const handlePage = () => {
+    dispatch(showLogin());
+    dispatch(hideSignUp());
     dispatch(hideOTP());
   };
-  const handleSignOTP = () => {
-    dispatch(signOTP(true));
-    //verify pe click keruga to false
-  };
-  const printUserData = ()=>{
-    const userData = useSelector((store)=>store.userData.item);
-    userData.forEach((obj , index) => {
-        console.log(`Object ${index + 1}`);
-        console.log(obj.phoneNumber);
-        console.log(obj.name);
-        console.log(obj.email);
-        console.log(obj.cart);
-    });
+  
+  const handleSignUpPageChange = () => {
+
+    const formObj = {
+      phoneNumber,
+      name,
+      email,
+      cart:[],
   }
+    console.log("fomObj",formObj);
+    setShouldExecuteSignUpPageChange(false);
+    dispatch(hideLogin());
+    dispatch(hideOTP());
+    dispatch(showSignUpCardOTP());
+    dispatch(hideSignUp());
+    // setFormData({phoneNumber:validNumber, name:validName, email:validEmail , cart:[]})
+    dispatch(addUserData(formObj));
+    // dispatch(addUserName(name));
+  };
+ 
+
   return (
     <div>
       <div className="flex justify-between">
@@ -108,8 +104,7 @@ const LoginSignCard = () => {
             or<span> </span>
             <button
               onClick={() => {
-                handleSignUp();
-                handleOTP();
+                handlePage();
               }}
               className="text-orange-400 hover:text-black"
             >
@@ -178,7 +173,7 @@ const LoginSignCard = () => {
             className="border-none outline-none text-2xl text-black w-full font-semibold"
           />
         </div>
-        {show ? (
+        {Referal ? (
           <div className="border-2 border-gray-300 p-4 w-full">
             <div className="text-gray-500 font-medium">Referral Code</div>
             <input
@@ -187,8 +182,7 @@ const LoginSignCard = () => {
               className="border-none outline-none text-2xl text-black w-full font-semibold"
             />
           </div>
-        ) : null}
-        {!show ? (
+        ) : (
           <button
             onClick={() => {
               showReferralInput();
@@ -197,23 +191,20 @@ const LoginSignCard = () => {
           >
             Have a referral code?
           </button>
-        ) : null}
+        )}
+
         <button
           className="bg-orange-500 text-white font-medium p-4 w-full mt-2"
           onClick={() => {
             handleContinue();
-            handleUserData();
-            handleSignOTP();
-            printUserData();
-            // {
-            //   validProcess ? 
-            //   (handleUserData(),
-            //   handleSignOTP()):null
-            // }
+            
+            // handleValue(validNumber , validName , validEmail);
+            // handleSignUpPageChange();
           }}
         >
           CONTINUE
         </button>
+        {shouldExecuteSignUpPageChange && handleSignUpPageChange()}
       </div>
     </div>
   );

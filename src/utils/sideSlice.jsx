@@ -8,11 +8,6 @@ const sideSlice = createSlice({
     filterItem: [],
     item: [],
     isSearch: true,
-    isLogin:false,
-    isSignUp:false,
-    isOTP:false,
-    phoneItem:[],
-    OTP:"",
   },
   reducers: {
     setInput: (state, action) => {
@@ -59,35 +54,7 @@ const sideSlice = createSlice({
     removeCross:(state)=>{
       state.isSearch = true;
     },
-    addLogin:(state)=>{
-      state.isLogin = true;
-    },
-    removeLogin:(state)=>{
-      state.isLogin = false;
-    },
-    showSignUp:(state)=>{
-      state.isSignUp = true;
-    },
-    hideSignUp:(state)=>{
-      state.isSignUp = false;
-    },
-    showOTP:(state)=>{
-      state.isOTP = true;
-    },
-    hideOTP:(state)=>{
-      state.isOTP = false;
-    },
-    addPhoneNumber:(state , action)=>{
-      console.log("phoneNumber" , action.payload);
-      state.phoneItem.push(action.payload);
-    },
-    removePhoneNumber:(state , action)=>{
-      state.phoneItem.length = 0;
-    },
-    addOTP:(state , action)=>{
-      console.log("OTP->",action.payload);
-      state.OTP = action.payload;
-    }
+    
   },
 });
 
@@ -101,14 +68,5 @@ export const {
   removeApply,
   addCross,
   removeCross,
-  addLogin,
-  removeLogin,
-  showSignUp,
-  hideSignUp,
-  showOTP,
-  hideOTP,
-  addPhoneNumber,
-  removePhoneNumber,
-  addOTP,
 } = sideSlice.actions;
 export default sideSlice.reducer;

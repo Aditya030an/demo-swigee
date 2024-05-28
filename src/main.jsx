@@ -10,6 +10,7 @@ import RestaurentMenu from './component/RestaurentMenu.jsx'
 import HelpPartner from './component/HelpPartner.jsx'
 import HelpLegal from './component/HelpLegal.jsx'
 import HelpFaq from './component/HelpFaq.jsx'
+import Cart from './component/Cart.jsx'
 
 const appRouter = createBrowserRouter([
   {
@@ -52,10 +53,10 @@ const appRouter = createBrowserRouter([
       //   path:"/username",
       //   element:<UserName/>
       // },
-      // {
-      //   path:"/cart",
-      //   element:<Cart/>
-      // },
+      {
+        path:"/cart",
+        element:<Cart/>
+      },
     ]
     
   }
